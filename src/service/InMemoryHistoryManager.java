@@ -1,7 +1,7 @@
 package service;
 
-import additionalStructures.CustomLinkedList;
-import additionalStructures.Node;
+import structures.CustomLinkedList;
+import structures.Node;
 import model.Task;
 
 import java.util.HashMap;

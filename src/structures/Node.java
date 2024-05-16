@@ -1,4 +1,4 @@
-package additionalStructures;
+package structures;
 
 public class Node<E> {
     Node<E> next;
