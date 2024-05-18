@@ -47,7 +47,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 updateEpic(epicId);
                 break;
             default:
-                throw new RuntimeException();
+                throw new RuntimeException("Ошибка при загрузке задачи");
         }
 
     }
@@ -74,7 +74,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 return fileBackedTasksManager;
             }
 
-            if (!bufferedReader.ready() || firstLine.equals("\n")) {
+            if (!bufferedReader.ready() || firstLine.equals(System.lineSeparator())) {
                 return fileBackedTasksManager;
             }
 
@@ -82,7 +82,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
                 String line = bufferedReader.readLine();
 
-                if (line.equals("")) {
+                if (line.isEmpty()) {
                     break;
                 }
 
@@ -98,7 +98,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 return fileBackedTasksManager;
             }
 
-            if (lastLine.equals("")) {
+            if (lastLine.isEmpty()) {
                 return fileBackedTasksManager;
             }
 
@@ -126,7 +126,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Throwable cause = e.getCause();
+            System.out.println("Обработано исключение " + cause);
         }
 
         return fileBackedTasksManager;
