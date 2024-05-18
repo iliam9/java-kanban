@@ -3,7 +3,6 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 import service.FileBackedTasksManager;
-import service.HistoryManager;
 import util.Managers;
 
 import java.io.File;

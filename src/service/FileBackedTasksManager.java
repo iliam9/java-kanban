@@ -205,7 +205,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             idHistory.append(task.getId()).append(",");
         }
 
-        if (idHistory.length() != 0) {
+        if (!idHistory.isEmpty()) {
             idHistory.deleteCharAt(idHistory.length() - 1);
         }
 
