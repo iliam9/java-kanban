@@ -62,24 +62,24 @@ public class InMemoryTasksManager implements TasksManager {
         List<Integer> subtaskIds = epics.get(epicId).getSubtasksId();//берем список подзадач эпика
         if (subtaskIds.isEmpty()) { // если список пустой устанавливаем нулевые значения для эпика
             epics.get(epicId).setDuration(Duration.ZERO);
-            epics.get(epicId).setStartTime(null);
-            epics.get(epicId).setEndTime(null);
+            epics.get(epicId).setStartTime(LocalDateTime.now());
+            epics.get(epicId).setEndTime(LocalDateTime.now());
             return;
         }
-        LocalDateTime epicStartTime = null;
-        LocalDateTime epicEndTime = null;
+        LocalDateTime epicStartTime = LocalDateTime.now();
+        LocalDateTime epicEndTime = LocalDateTime.now();
         Duration epicDuration = Duration.ZERO;
         for (Integer subtaskId : subtaskIds) {
             Subtask subtask = subtasks.get(subtaskId);
             LocalDateTime subtaskStartTime = subtask.getStartTime();
             LocalDateTime subtaskEndTime = subtask.getEndTime();
             if (subtaskStartTime != null) {
-                if (epicStartTime == null || subtaskStartTime.isBefore(epicStartTime)) {
+                if (epicStartTime == LocalDateTime.now() || subtaskStartTime.isBefore(epicStartTime)) {
                     epicStartTime = subtaskStartTime;
                 }
             }
             if (subtaskEndTime != null) {
-                if (epicEndTime == null || subtaskEndTime.isAfter(epicEndTime)) {
+                if (epicEndTime == LocalDateTime.now() || subtaskEndTime.isAfter(epicEndTime)) {
                     epicEndTime = subtaskEndTime;
                 }
             }
@@ -95,18 +95,36 @@ public class InMemoryTasksManager implements TasksManager {
         updateEpicStatus(epicId);
     }
 
-    protected void checkValidation() {
-        final List<Task> prioritizedTask = getPrioritizedTasks();
-        for (int i = 0; i < prioritizedTask.size() - 1; i++) {
-            final Task currentTask = prioritizedTask.get(i);
-            final Task nextTask = prioritizedTask.get(i + 1);
+//    protected void checkValidation() {
+//        final List<Task> prioritizedTask = getPrioritizedTasks();
+//        for (int i = 0; i < prioritizedTask.size() - 1; i++) {
+//            final Task currentTask = prioritizedTask.get(i);
+//            final Task nextTask = prioritizedTask.get(i + 1);
+//
+//            if (!currentTask.getEndTime().isBefore(nextTask.getStartTime())) {
+//                throw new DataValidationException("Несколько задач выполняются одновременно.");
+//            }
+//        }
+//
+//    }
 
-            if (!currentTask.getEndTime().isBefore(nextTask.getStartTime())) {
-                throw new DataValidationException("Несколько задач выполняются одновременно.");
-            }
+public void checkValidation(Task newTask) {
+    List<Task> prioritizedTasks = getPrioritizedTasks();
+    for (Task existTask : prioritizedTasks) {
+        if (newTask.getStartTime() == null || existTask.getStartTime() == null) {
+            return;
         }
-
+        if (Objects.equals(newTask.getId(), existTask.getId())) {
+            continue;
+        }
+        if ((!newTask.getEndTime().isAfter(existTask.getStartTime())) ||
+                (!newTask.getStartTime().isBefore(existTask.getEndTime()))) {
+            continue;
+        }
+        throw new DataValidationException("Время выполнения задачи пересекается со временем уже существующей " +
+                "задачи. Выберите другую дату.");
     }
+}
 
     protected void updateId(int id) {
         if (nextId <= id) {
@@ -125,7 +143,7 @@ public class InMemoryTasksManager implements TasksManager {
             nextId++;
         }
 
-        checkValidation();
+        checkValidation(task);
 
         tasks.put(task.getId(), task);
         prioritizedTasks.add(task);
@@ -142,7 +160,7 @@ public class InMemoryTasksManager implements TasksManager {
             subtask.setId(nextId);
             nextId++;
         }
-        checkValidation();
+        checkValidation(subtask);
 
         subtasks.put(subtask.getId(), subtask);
 
@@ -172,13 +190,13 @@ public class InMemoryTasksManager implements TasksManager {
 
     @Override
     public void updateTask(Task task) {
-        checkValidation();
+        checkValidation(task);
         tasks.put(task.getId(), task);
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        checkValidation();
+        checkValidation(subtask);
         subtasks.put(subtask.getId(), subtask);
 
         int epicId = subtask.getEpicId();
@@ -188,7 +206,7 @@ public class InMemoryTasksManager implements TasksManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        checkValidation();
+        checkValidation(epic);
         epics.put(epic.getId(), epic);
         updateEpic(epic.getId());
 

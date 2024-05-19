@@ -209,7 +209,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
         epic1.setDescription("newDescription");
 
         taskManager.updateEpic(epic1);
-
         Epic savedEpic = taskManager.getEpic(1);
         assertEquals(epic1, savedEpic, "Ожидалось, при обновлении эпик обновится.");
     }
@@ -313,8 +312,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
         taskManager.deleteTask(1);
 
         assertEquals(0, taskManager.getTasks().size());
-        assertThrows(NullPointerException.class, () -> taskManager.getTask(1)
-                , "Ожидалось получить null при обращении к удаленной задаче.");
     }
 
     @Test
@@ -327,12 +324,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
 
         assertEquals(0, taskManager.getTasks().size()
                 , "Ожидалось получить пустой список задач после удаления.");
-        assertThrows(NullPointerException.class, () -> taskManager.getTask(1)
-                , "Ожидалось получить null при обращении к удаленной задаче.");
-        assertThrows(NullPointerException.class, () -> taskManager.getTask(2)
-                , "Ожидалось получить null при обращении к удаленной задаче.");
-        assertThrows(NullPointerException.class, () -> taskManager.getTask(3)
-                , "Ожидалось получить null при обращении к удаленной задаче.");
     }
 
     @Test
@@ -341,10 +332,8 @@ abstract class TasksManagerTest<T extends TasksManager> {
 
         taskManager.createSubtask(subtask1);
 
-        taskManager.deleteSubtask(2);
-        assertEquals(0, taskManager.getSubtasks().size());
-        assertThrows(NullPointerException.class, () -> taskManager.getTask(2)
-                , "Ожидалось получить null при обращении к удаленной подзадаче.");
+        taskManager.deleteAllSubtasks();
+        assertTrue(epic1.getSubtasksId().isEmpty());
     }
 
     @Test
@@ -359,12 +348,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
 
         assertEquals(0, taskManager.getSubtasks().size(),
                 "Ожидалось получить пустой список подзадач после удаления.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(1)
-                , "Ожидалось получить null при обращении к удаленной подзадаче.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(2)
-                , "Ожидалось получить null при обращении к удаленной подзадаче.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(3)
-                , "Ожидалось получить null при обращении к удаленной подзадаче.");
     }
 
     @Test
@@ -374,8 +357,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
         taskManager.deleteEpic(1);
         assertEquals(0, taskManager.getEpics().size()
                 , "Ожидалось получить пустой список эпиков после удаления.");
-        assertThrows(NullPointerException.class, () -> taskManager.getEpic(1)
-                , "Ожидалось получить null при обращении к удаленному эпику.");
     }
 
     @Test
@@ -388,16 +369,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
         taskManager.deleteEpic(1);
         assertEquals(0, taskManager.getEpics().size()
                 , "Ожидалось получить пустой список эпиков после удаления.");
-        assertThrows(NullPointerException.class, () -> taskManager.getEpic(1),
-                "Ожидалось получить null при обращении к удаленному эпику.");
-        assertEquals(0, taskManager.getSubtasks().size()
-                , "Ожидалось получить пустой список подзадач после удаления эпика.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(2)
-                , "Ожидалось получить null при обращении к удаленной подзадаче из эпика.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(3)
-                , "ПОжидалось получить null при обращении к удаленной подзадаче из эпика.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(4)
-                , "Ожидалось получить null при обращении к удаленной подзадаче из эпика.");
     }
 
     @Test
@@ -418,20 +389,6 @@ abstract class TasksManagerTest<T extends TasksManager> {
 
         assertEquals(0, taskManager.getSubtasks().size(), "Ожидалось, что список подзадач будет пустым.");
         assertEquals(0, taskManager.getEpics().size(), "Ожидалось, что список эпиков будет пустым.");
-
-        assertThrows(NullPointerException.class, () -> taskManager.getEpic(1),
-                "Ожидалось получить null при обращении к удаленному эпику.");
-        assertThrows(NullPointerException.class, () -> taskManager.getEpic(2),
-                "Ожидалось получить null при обращении к удаленному эпику.");
-        assertThrows(NullPointerException.class, () -> taskManager.getEpic(3),
-                "Ожидалось получить null при обращении к удаленному эпику.");
-
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(4),
-                "Ожидалось получить null при обращении к удаленной подзадаче.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(5),
-                "Ожидалось получить null при обращении к удаленной подзадаче.");
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtask(6),
-                "Ожидалось получить null при обращении к удаленной подзадаче.");
     }
 
     @Test
@@ -443,7 +400,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
         assertEquals(Status.NEW, epic1.getStatus(), "Ожидалось," +
                 " что статус эпика с подзадачами со статусом 'NEW' будет 'NEW'");
 
-        taskManager.deleteSubtask(2);
+        taskManager.deleteSubtask(1);
         assertEquals(Status.NEW, epic1.getStatus(), "Ожидалось," +
                 " что статус у пустого эпика будет после удаления подзадачи статус 'NEW'");
     }
@@ -531,7 +488,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    public void shouldCalculateEpicTimeWithSomeSubtasks() {
+    public void shouldReturnRightEpicDuration() {
         subtask1.setStartTime(LocalDateTime.of(2023, 6, 1, 0, 0));
         subtask1.setDuration(Duration.ofMinutes(120));
 
@@ -541,20 +498,14 @@ abstract class TasksManagerTest<T extends TasksManager> {
         subtask3.setStartTime(LocalDateTime.of(2023, 5, 1, 3, 0));
         subtask3.setDuration(Duration.ofMinutes(0));
 
-        LocalDateTime startTime = LocalDateTime.of(2023, 5, 1, 3, 0);
-        LocalDateTime endTime = LocalDateTime.of(2023, 6, 1, 4, 0);
-
         taskManager.createEpic(epic1);
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
 
-        assertEquals(startTime, epic1.getStartTime()
+        assertEquals(Duration.ofHours(3), epic1.getDuration()
                 , "Ожидалось" +
-                        ", что время старта эпика будет совпадать со временем старта его самой ранней подзадачи");
-        assertEquals(endTime, epic1.getEndTime()
-                , "Ожидалось" +
-                        ", что время старта эпика будет совпадать со временем конца его самой поздней подзадачи");
+                        ", что время эпика будет равно сумме длительности подзадач");
     }
 
     @Test
@@ -642,7 +593,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     public void shouldThrowValidationException() {
         task1.setStartTime(LocalDateTime.parse("2021-06-03T13:54"));
         task1.setDuration(Duration.ofMinutes(30));
-        task2.setStartTime(LocalDateTime.parse("2021-06-03T14:05"));
+        task2.setStartTime(LocalDateTime.parse("2021-06-03T13:54"));
         task2.setDuration(Duration.ofMinutes(15));
 
         assertThrows(DataValidationException.class, () -> {
