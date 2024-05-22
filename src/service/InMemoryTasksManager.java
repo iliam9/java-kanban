@@ -95,36 +95,23 @@ public class InMemoryTasksManager implements TasksManager {
         updateEpicStatus(epicId);
     }
 
-//    protected void checkValidation() {
-//        final List<Task> prioritizedTask = getPrioritizedTasks();
-//        for (int i = 0; i < prioritizedTask.size() - 1; i++) {
-//            final Task currentTask = prioritizedTask.get(i);
-//            final Task nextTask = prioritizedTask.get(i + 1);
-//
-//            if (!currentTask.getEndTime().isBefore(nextTask.getStartTime())) {
-//                throw new DataValidationException("Несколько задач выполняются одновременно.");
-//            }
-//        }
-//
-//    }
-
-public void checkValidation(Task newTask) {
-    List<Task> prioritizedTasks = getPrioritizedTasks();
-    for (Task existTask : prioritizedTasks) {
-        if (newTask.getStartTime() == null || existTask.getStartTime() == null) {
-            return;
+    public void checkValidation(Task newTask) {
+        List<Task> prioritizedTasks = getPrioritizedTasks();
+        for (Task existTask : prioritizedTasks) {
+            if (newTask.getStartTime() == null || existTask.getStartTime() == null) {
+                return;
+            }
+            if (Objects.equals(newTask.getId(), existTask.getId())) {
+                continue;
+            }
+            if ((!newTask.getEndTime().isAfter(existTask.getStartTime())) ||
+                    (!newTask.getStartTime().isBefore(existTask.getEndTime()))) {
+                continue;
+            }
+            throw new DataValidationException("Время выполнения задачи пересекается со временем уже существующей " +
+                    "задачи. Выберите другую дату.");
         }
-        if (Objects.equals(newTask.getId(), existTask.getId())) {
-            continue;
-        }
-        if ((!newTask.getEndTime().isAfter(existTask.getStartTime())) ||
-                (!newTask.getStartTime().isBefore(existTask.getEndTime()))) {
-            continue;
-        }
-        throw new DataValidationException("Время выполнения задачи пересекается со временем уже существующей " +
-                "задачи. Выберите другую дату.");
     }
-}
 
     protected void updateId(int id) {
         if (nextId <= id) {
@@ -137,14 +124,11 @@ public void checkValidation(Task newTask) {
 
         if (Objects.isNull(task))
             return;
-
+        checkValidation(task);
         if (task.getId() == 0) {
             task.setId(nextId);
             nextId++;
         }
-
-        checkValidation(task);
-
         tasks.put(task.getId(), task);
         prioritizedTasks.add(task);
 
@@ -153,15 +137,13 @@ public void checkValidation(Task newTask) {
     @Override
     public void createSubtask(Subtask subtask) {
 
-        if (subtask == null)
+        if (Objects.isNull(subtask))
             return;
-
+        checkValidation(subtask);
         if (subtask.getId() == 0) {
             subtask.setId(nextId);
             nextId++;
         }
-        checkValidation(subtask);
-
         subtasks.put(subtask.getId(), subtask);
 
         int epicId = subtask.getEpicId();
@@ -190,17 +172,22 @@ public void checkValidation(Task newTask) {
 
     @Override
     public void updateTask(Task task) {
+        int id = task.getId();
         checkValidation(task);
+        prioritizedTasks.remove(tasks.get(id));
         tasks.put(task.getId(), task);
+        prioritizedTasks.add(task);
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
+        int id = subtask.getId();
         checkValidation(subtask);
-        subtasks.put(subtask.getId(), subtask);
-
-        int epicId = subtask.getEpicId();
+        prioritizedTasks.remove(subtasks.get(id));
+        subtasks.put(id, subtask);
+        int epicId = subtasks.get(id).getEpicId();
         updateEpic(epicId);
+        prioritizedTasks.add(subtask);
 
     }
 
