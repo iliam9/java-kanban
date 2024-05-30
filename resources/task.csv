@@ -1,0 +1,13 @@
+id,type,title,status,description,startTime,duration,epicId
+7,TASK,task1,NEW,taskDescription1,2021-06-03T13:54,PT1H40M
+8,TASK,task2,NEW,taskDescription2,2021-05-03T13:54,PT1H40M
+9,TASK,task3,NEW,taskDescription3,2021-06-03T17:54,PT1H40M
+10,TASK,task4,NEW,taskDescription4,2022-06-03T17:54,PT1H40M
+1,EPIC,epic1,NEW,epicDescription1,2020-05-03T13:56,PT5H
+2,EPIC,epic2,NEW,epicDescription2,2024-05-22T23:56:56,PT0S
+3,EPIC,epic3,NEW,taskDescription3,2024-05-22T23:56:56,PT0S
+4,SUBTASK,subtask1,NEW,subtaskDescription1,2020-06-03T13:54,PT1H40M,1
+5,SUBTASK,subtask2,NEW,subtaskDescription2,2020-05-03T13:56,PT1H40M,1
+6,SUBTASK,subtask3,NEW,subtaskDescription3,2020-06-03T20:00,PT1H40M,1
+
+7,8,1,2,3,4,5,6,9
