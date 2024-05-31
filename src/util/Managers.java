@@ -34,9 +34,9 @@ public class Managers {
         }
     }
 
-    public static HttpTaskManager getHttpTaskManager(final int PORT) {
+    public static HttpTaskManager getHttpTaskManager(final int port) {
         try {
-            return new HttpTaskManager(new URL("http://localhost:" + PORT));
+            return new HttpTaskManager(new URL("http://localhost:" + port));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
