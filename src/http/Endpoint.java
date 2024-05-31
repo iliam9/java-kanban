@@ -1,4 +1,4 @@
-package httpServer;
+package http;
 
 public enum Endpoint {
     PUT_TASK, PUT_SUBTASK, PUT_EPIC,

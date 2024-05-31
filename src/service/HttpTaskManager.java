@@ -1,7 +1,7 @@
 package service;
 
-import httpServer.KVTaskClient;
-import httpServer.TaskGson;
+import http.KVTaskClient;
+import http.TaskGson;
 import model.Epic;
 import model.Subtask;
 import model.Task;

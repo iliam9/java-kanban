@@ -1,4 +1,4 @@
-package httpServer;
+package http;
 
 import java.io.IOException;
 import java.net.URI;
