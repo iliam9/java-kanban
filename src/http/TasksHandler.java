@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 class TasksHandler implements HttpHandler {
     private final HttpTaskServer httpTaskServer;
-    private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private final Charset defaultCharset = StandardCharsets.UTF_8;
 
     public TasksHandler(HttpTaskServer httpTaskServer) {
         this.httpTaskServer = httpTaskServer;
@@ -330,7 +330,7 @@ class TasksHandler implements HttpHandler {
         if (responseString.isBlank()) {
             exchange.sendResponseHeaders(responseCode, 0);
         } else {
-            byte[] bytes = responseString.getBytes(DEFAULT_CHARSET);
+            byte[] bytes = responseString.getBytes(defaultCharset);
             exchange.sendResponseHeaders(responseCode, bytes.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(bytes);
@@ -341,7 +341,7 @@ class TasksHandler implements HttpHandler {
 
     private String readBody(HttpExchange httpExchange) throws IOException {
         try (InputStream os = httpExchange.getRequestBody()) {
-            return new String(os.readAllBytes(), DEFAULT_CHARSET);
+            return new String(os.readAllBytes(), defaultCharset);
         } catch (JsonSyntaxException exp) {
             writeResponse(httpExchange, "Получен некорректный JSON", 400);
             return "";
