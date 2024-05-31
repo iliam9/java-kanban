@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 public class KVTaskClient {
     private final HttpClient client;
     private final URL urlDataServer;
-    private String API_TOKEN;
+    private String apiToken;
 
     public KVTaskClient(URL urlDataServer) {
         client = HttpClient.newHttpClient();
@@ -28,7 +28,7 @@ public class KVTaskClient {
         try {
             HttpResponse<String> response = sendRequest(request);
             printResponse(response);
-            API_TOKEN = response.body();
+            apiToken = response.body();
         } catch (IOException | InterruptedException e) { // обработка ошибки отправки запроса
             System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + uri + "' возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
@@ -36,7 +36,7 @@ public class KVTaskClient {
     }
 
     public void put(String key, String json) {
-        URI uri = URI.create(urlDataServer.toString() + "/save/" + key + "?API_TOKEN=" + API_TOKEN);
+        URI uri = URI.create(urlDataServer.toString() + "/save/" + key + "?API_TOKEN=" + apiToken);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -51,7 +51,7 @@ public class KVTaskClient {
     }
 
     public String load(String key) {
-        URI uri = URI.create(urlDataServer.toString() + "/load/" + key + "?API_TOKEN=" + API_TOKEN);
+        URI uri = URI.create(urlDataServer.toString() + "/load/" + key + "?API_TOKEN=" + apiToken);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .GET()
