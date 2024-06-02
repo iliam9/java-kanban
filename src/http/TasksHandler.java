@@ -96,7 +96,7 @@ class TasksHandler implements HttpHandler {
         try {
             task = TaskGson.GSON.fromJson(body, Task.class);
         } catch (JsonSyntaxException ex) {
-            writeResponse(httpExchange, "Получен некорректный JSON", 400);
+            writeResponse(httpExchange, "Получен некорректный JSON", 404);
             return;
         }
 
@@ -118,7 +118,7 @@ class TasksHandler implements HttpHandler {
         try {
             subtask = TaskGson.GSON.fromJson(body, Subtask.class);
         } catch (JsonSyntaxException ex) {
-            writeResponse(httpExchange, "Получен некорректный JSON", 400);
+            writeResponse(httpExchange, "Получен некорректный JSON", 404);
             return;
         }
 
@@ -138,13 +138,13 @@ class TasksHandler implements HttpHandler {
         try {
             epic = TaskGson.GSON.fromJson(body, Epic.class);
         } catch (JsonSyntaxException ex) {
-            writeResponse(httpExchange, "Получен некорректный JSON", 400);
+            writeResponse(httpExchange, "Получен некорректный JSON", 404);
             return;
         }
 
         if (epic.getId() == 0) {
             httpTaskServer.getTasksManager().createEpic(epic);
-            writeResponse(httpExchange, "Эпик создана", 201);
+            writeResponse(httpExchange, "Эпик создан", 201);
         } else {
             httpTaskServer.getTasksManager().updateEpic(epic);
             writeResponse(httpExchange, "Эпик обновлен", 201);
@@ -343,7 +343,7 @@ class TasksHandler implements HttpHandler {
         try (InputStream os = httpExchange.getRequestBody()) {
             return new String(os.readAllBytes(), defaultCharset);
         } catch (JsonSyntaxException exp) {
-            writeResponse(httpExchange, "Получен некорректный JSON", 400);
+            writeResponse(httpExchange, "Получен некорректный JSON", 404);
             return "";
         }
     }

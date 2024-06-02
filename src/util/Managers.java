@@ -1,5 +1,6 @@
 package util;
 
+import exceptions.GetHttpTaskManagerException;
 import service.*;
 
 import java.io.File;
@@ -30,7 +31,7 @@ public class Managers {
         try {
             return new HttpTaskManager(new URL("http://localhost:8078/"));
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new GetHttpTaskManagerException("Unable to get HttpTaskManager.");
         }
     }
 
@@ -38,7 +39,7 @@ public class Managers {
         try {
             return new HttpTaskManager(new URL("http://localhost:" + port));
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new GetHttpTaskManagerException("Unable to get HttpTaskManager.");
         }
     }
 

@@ -1,6 +1,7 @@
 package http;
 
 import com.sun.net.httpserver.HttpServer;
+import exceptions.StartServerException;
 import service.HttpTaskManager;
 import util.Managers;
 
@@ -21,15 +22,17 @@ public class HttpTaskServer {
             httpServer = HttpServer.create();
             httpServer.bind(new InetSocketAddress(port), 0);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new StartServerException("Server start error.");
         }
 
         httpServer.createContext("/tasks", new TasksHandler(this));
     }
 
     public void start() {
-        System.out.println("Запускаем сервер для работы с задачами на порту " + port);
-        System.out.println("URL http://localhost:" + port + "/");
+        String s = String.format("Запускаем сервер для работы с задачами на порту %s", port);
+        System.out.println(s);
+        String s1 = String.format("URL http://localhost: %s /", port);
+        System.out.println(s1);
         httpServer.start();
     }
 
